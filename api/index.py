@@ -17,8 +17,30 @@ async def index():
 async def collect(request: Request):
     data = await request.json()
 
+    ip = (
+        request.headers.get("x-forwarded-for", "").split(",")[0].strip()
+        or request.headers.get("x-real-ip")
+        or (request.client.host if request.client else None)
+    )
+
+    source_port = request.client.port if request.client else None
+    user_agent = request.headers.get("user-agent")
+
+    log = {
+        "type": "request",
+        "timestamp": data.get("timestamp"),
+        "ip": ip,
+        "source_port": source_port,
+        "user_agent_header": user_agent,
+        "user_agent_js": data.get("navigator", {}).get("userAgent"),
+        "url": str(request.url),
+        "method": request.method,
+        "fingerprint": data
+    }
+
     print("========== NEW FINGERPRINT ==========")
-    print(json.dumps(data, indent=2))
-    print("=====================================")
+    print(json.dumps(log, indent=2))
+    print("====================================")
 
     return {"status": "ok"}
+ 
