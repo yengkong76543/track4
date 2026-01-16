@@ -38,3 +38,8 @@ async def collect(request: Request):
     print("====================================")
 
     return {"status": "ok"}
+async def get_client_ip(req):
+    xff = req.headers.get("X-forwarded-for")
+    if xff:
+        return xff.split(",")[0].strip()
+    return req.remote_addr
