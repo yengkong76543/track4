@@ -18,7 +18,7 @@ async def index():
 async def collect(request: Request):
     data = await request.json()
 
-    # 🔥 LẤY IP THẬT (Vercel / Proxy / CDN)
+    # ip
     ip = (
         request.headers.get("x-forwarded-for", "").split(",")[0].strip()
         or request.client.host
